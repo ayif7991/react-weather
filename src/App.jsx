@@ -9,43 +9,64 @@ function App() {
   const [city, setCity] = useState('London');
   const [forecastData, setForecastData] = useState([]);
   const [searchInput, setSearchInput] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   
 
-  useEffect(() => {
-    const fetchWeatherData = async (cityName) => {
-      try{
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_Key}&units=imperial`;
-        console.log('url:', url)
-        const response = await fetch(url);
-        const data = await response.json();
-        setWeatherData(data);
-        console.log('data:', data)
+  const fetchWeatherData = async (cityName) => {
+    setCity(cityName);
+    try{
+      setLoading(true);
+      setError(null);
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_Key}&units=imperial`;
+      console.log('url:', url)
+      const response = await fetch(url);
+      const data = await response.json();
+      setWeatherData(data);
+      console.log('data:', data)
 
-        const forecastresponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_Key}&units=imperial`);
-        const forecastdata = await forecastresponse.json();
-        const dailyForecast = forecastdata.list.filter(
-          (item,index) => index % 8 === 0
-        );
+      const forecastresponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_Key}&units=imperial`);
+      const forecastdata = await forecastresponse.json();
+      const dailyForecast = forecastdata.list.filter(
+        (item,index) => index % 8 === 0
+      );
 
-        setForecastData(dailyForecast);
-        console.log('forecastdata:', forecastdata)
-        console.log('dailyForecast:', dailyForecast)
-    } catch (error) {
+      setForecastData(dailyForecast);
+      console.log('forecastdata:', forecastdata)
+      console.log('dailyForecast:', dailyForecast)
+  } catch (error) {
+      setError('Failed to fetch weather data. Please try again.');
       console.error('Error fetching weather data:', error);
-    }
-    };
+  }
+  finally {
+      setLoading(false);
+  }
+  };
+  function handleSearch(e) {
+    e.preventDefault();
+    fetchWeatherData(searchInput);
+  }
+
+  useEffect(() => {
     fetchWeatherData(city);
   },[city]);
+  if (loading) {
+    return <div className='loading'>Loading...</div>;
+  }
+  if (error) {
+    return <div className='error'>{error}</div>;
+  }
   return (
     <div className="wrapper">
-      <form className='search-form'>
-        <input type="text"
+      <form onSubmit={handleSearch} className='search-form'>
+        <input 
+        type="text"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
         placeholder='Enter city' 
-        className='search-inp'
+        className='search-input'
         />
-        <button type='submit' className='search-button'>
+        <button type='submit' className='search-btn'>
           Search
         </button>
       </form>
@@ -67,21 +88,8 @@ function App() {
             </div>
           </div></>
       )}
-      <div className='header'>
-        <h1 className='city'>London</h1>
-        <p className='temp'>60°F</p>
-        <p className='cond'>Cloudy</p>
-      </div>
-      <div className='weather-details'>
-        <div>
-          <p>Humidity</p>
-          <p>60%</p>
-        </div>
-        <div>
-          <p>Wind</p>
-          <p>10 mph</p>
-      </div>
-    </div>
+      
+      
     {forecastData.length > 0 && (
       <>
       <div className='forecast'>

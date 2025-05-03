@@ -1,61 +1,29 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import get_city from "./assets/Curr_loc/curr_loc.js";
+import getCity from "./api/currentcity.js";
+import fetchWeatherData from "./api/weatherdata.js";
 
 function App() {
-  const API_KEY = import.meta.env.VITE_API_KEY;
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  
   const [weatherData, setWeatherData] = useState(null);
-  //getcity function gets the current location of the user
-  //and returns the city name
-  const [city, setCity] = useState('London');
+  const [city, setCity] = useState("London");
   const [forecastData, setForecastData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
-
-  const fetchWeatherData = async (cityName) => {
   
-    try {
-      setLoading(true);
-      setError(null);
-      const url = `${BASE_URL}/data/2.5/weather?q=${city}&appid=${API_KEY}&units=imperial`;
-      const response = await fetch(url);
-      const data = await response.json();
-      setWeatherData(data);
-
-      const forecastresponse = await fetch(
-        `${BASE_URL}/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=imperial`
-      );
-      const forecastdata = await forecastresponse.json();
-      const dailyForecast = forecastdata.list.filter(
-        (index) => index % 8 === 0
-      );
-
-      setForecastData(dailyForecast);
-      console.log("forecastdata:", forecastdata);
-      console.log("dailyForecast:", dailyForecast);
-    } catch (error) {
-      setError("Failed to fetch weather data. Please try again.");
-      console.error("Error fetching weather data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
   function handleSearch(e) {
     e.preventDefault();
     setCity(searchInput);
   }
 
   useEffect(() => {
-    get_city(setCity)
-    console.log("city:", city);
+    getCity(setCity);
   }, []);
 
   useEffect(() => {
-    fetchWeatherData(city);
+    fetchWeatherData(city, setLoading, setForecastData, setError, setWeatherData);
   }, [city]);
 
   if (loading) {
@@ -82,7 +50,7 @@ function App() {
         <>
           <div className="header">
             <h1 className="city">{weatherData.name}</h1>
-            <p className="temp">{Math.round(weatherData.main.temp)}°F</p>
+            <p className="temp">{Math.round(weatherData.main.temp)}°C</p>
             <p className="cond">{weatherData.weather[0].main}</p>
           </div>
           <div>
@@ -117,10 +85,10 @@ function App() {
                     })}
                   </p>
                   <img
-                    src={`${BASE_URL}/img/wn/${day.weather[0].icon}.png`}
+                    src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
                     alt={day.weather[0].description}
                   />
-                  <p>{Math.round(day.main.temp)}°F</p>
+                  <p>{Math.round(day.main.temp)}°C</p>
                 </div>
               ))}
             </div>

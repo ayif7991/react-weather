@@ -1,25 +1,29 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import get_city from "./assets/Curr_loc/curr_loc.jsx";
 
 function App() {
   const API_KEY = import.meta.env.VITE_API_KEY;
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-  console.log("BASE-URL:", BASE_URL);
   const [weatherData, setWeatherData] = useState(null);
-  const [city, setCity] = useState("London");
+  //getcity function gets the current location of the user
+  //and returns the city name
+  const [city, setCity] = useState('');
   const [forecastData, setForecastData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
+
   const fetchWeatherData = async (cityName) => {
+    get_city();
+    console.log("cityName:inu", cityName);
     setCity(cityName);
     try {
       setLoading(true);
       setError(null);
       const url = `${BASE_URL}/data/2.5/weather?q=${city}&appid=${API_KEY}&units=imperial`;
-      console.log("base_url:", BASE_URL);
-      console.log("url:", url);
       const response = await fetch(url);
       const data = await response.json();
       setWeatherData(data);
@@ -30,7 +34,7 @@ function App() {
       );
       const forecastdata = await forecastresponse.json();
       const dailyForecast = forecastdata.list.filter(
-        (item, index) => index % 8 === 0
+        (index) => index % 8 === 0
       );
 
       setForecastData(dailyForecast);
@@ -47,6 +51,16 @@ function App() {
     e.preventDefault();
     fetchWeatherData(searchInput);
   }
+
+  useEffect(() => {
+    const fetchCity =  () => {
+      const cityName =  get_city();
+      console.log("cityName:", cityName);
+      setCity(cityName);
+      fetchWeatherData(cityName);
+    };
+    fetchCity();
+  }, []);
 
   useEffect(() => {
     fetchWeatherData(city);

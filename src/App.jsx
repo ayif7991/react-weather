@@ -1,118 +1,102 @@
-import { useState, useEffect } from 'react'
-import './App.css'
-
+import { useState, useEffect } from "react";
+import "./App.css";
+import getCity from "./api/currentcity.js";
+import fetchWeatherData from "./api/weatherdata.js";
 
 function App() {
-  const API_Key = import.meta.env.VITE_API_KEY
-  console.log('API Key:', API_Key)
+  
   const [weatherData, setWeatherData] = useState(null);
-  const [city, setCity] = useState('London');
+  const [city, setCity] = useState("London");
   const [forecastData, setForecastData] = useState([]);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
   
-
-  const fetchWeatherData = async (cityName) => {
-    setCity(cityName);
-    try{
-      setLoading(true);
-      setError(null);
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_Key}&units=imperial`;
-      console.log('url:', url)
-      const response = await fetch(url);
-      const data = await response.json();
-      setWeatherData(data);
-      console.log('data:', data)
-
-      const forecastresponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_Key}&units=imperial`);
-      const forecastdata = await forecastresponse.json();
-      const dailyForecast = forecastdata.list.filter(
-        (item,index) => index % 8 === 0
-      );
-
-      setForecastData(dailyForecast);
-      console.log('forecastdata:', forecastdata)
-      console.log('dailyForecast:', dailyForecast)
-  } catch (error) {
-      setError('Failed to fetch weather data. Please try again.');
-      console.error('Error fetching weather data:', error);
-  }
-  finally {
-      setLoading(false);
-  }
-  };
   function handleSearch(e) {
     e.preventDefault();
-    fetchWeatherData(searchInput);
+    setCity(searchInput);
   }
 
   useEffect(() => {
-    fetchWeatherData(city);
-  },[city]);
+    getCity(setCity);
+  }, []);
+
+  useEffect(() => {
+    fetchWeatherData(city, setLoading, setForecastData, setError, setWeatherData);
+  }, [city]);
+
   if (loading) {
-    return <div className='loading'>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
   if (error) {
-    return <div className='error'>{error}</div>;
+    return <div className="error">{error}</div>;
   }
   return (
     <div className="wrapper">
-      <form onSubmit={handleSearch} className='search-form'>
-        <input 
-        type="text"
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        placeholder='Enter city' 
-        className='search-input'
+      <form onSubmit={handleSearch} className="search-form">
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Enter city"
+          className="search-input"
         />
-        <button type='submit' className='search-btn'>
+        <button type="submit" className="search-btn">
           Search
         </button>
       </form>
-      {weatherData && (weatherData.main && weatherData.weather) &&(
-        <><div className='header'>
-          <h1 className='city'>{weatherData.name}</h1>
-          <p className='temp'>{Math.round(weatherData.main.temp)}°F</p>
-          <p className='cond'>{weatherData.weather[0].main}</p>
-        </div><div>
-            <div className='weather-details'>
+      {weatherData && weatherData.main && weatherData.weather && (
+        <>
+          <div className="header">
+            <h1 className="city">{weatherData.name}</h1>
+            <p className="temp">{Math.round(weatherData.main.temp)}°C</p>
+            <p className="cond">{weatherData.weather[0].main}</p>
+          </div>
+          <div>
+            <div className="weather-details">
               <div>
                 <p>Humidity</p>
-                <p style={{ fontWeight: "bold" }}>{Math.round(weatherData.main.humidity)}%</p>
+                <p style={{ fontWeight: "bold" }}>
+                  {Math.round(weatherData.main.humidity)}%
+                </p>
               </div>
               <div>
                 <p>Wind Speed</p>
-                <p style={{ fontWeight: "bold" }}>{Math.round(weatherData.wind.speed)} mph</p>
+                <p style={{ fontWeight: "bold" }}>
+                  {Math.round(weatherData.wind.speed)} mph
+                </p>
               </div>
             </div>
-          </div></>
+          </div>
+        </>
       )}
-      
-      
-    {forecastData.length > 0 && (
-      <>
-      <div className='forecast'>
-        <h2 className='forecast-header'>5-Day Forecast</h2>
-        <div className='forecast-days'>
-          {forecastData.map((day, index) => (
-            <div key={index} className='forecast-day'>
-              <p>
-                {new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' })}
-              </p>
-              <img 
-                src={`http://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                alt={day.weather[0].description} 
-              />
-              <p>{Math.round(day.main.temp)}°F</p>
+
+      {forecastData.length > 0 && (
+        <>
+          <div className="forecast">
+            <h2 className="forecast-header">5-Day Forecast</h2>
+            <div className="forecast-days">
+              {forecastData.map((day, index) => (
+                <div key={index} className="forecast-day">
+                  <p>
+                    {new Date(day.dt * 1000).toLocaleDateString("en-US", {
+                      weekday: "short",
+                    })}
+                  </p>
+                  <img
+                    src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                    alt={day.weather[0].description}
+                  />
+                  <p>{Math.round(day.main.temp)}°C</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-    </>
-    )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-export default App
+export default App;

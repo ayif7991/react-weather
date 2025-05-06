@@ -2,7 +2,7 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 /**
- * Gets the user's current city using geolocation
+ * Retrieves the user's current city using the browser's geolocation API and updates the city state.
  * @param {Function} setCityCallback - A callback function to update the city state.
  */
 

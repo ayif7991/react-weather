@@ -2,8 +2,8 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 /**
- * Retrieves the user's current city using the browser's geolocation API and updates the city state.
- * @param {Function} setCityCallback - A callback function to update the city state.
+ * Fetches the current weather data and 5-day forecast for a given city from the OpenWeatherMapAPI.
+ * @param {string} city - The name of the city to fetch weather data for.
  */
 
 const fetchWeatherData = async (city) => {

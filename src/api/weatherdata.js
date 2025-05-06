@@ -4,7 +4,6 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const fetchWeatherData = async (city,setLoading,setForecastData,setError,setWeatherData) => {
     try {
-      console.log("fetching data for:", city);
       setLoading(true);
       setError(null);
       const url = `${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric`;
@@ -21,8 +20,7 @@ const fetchWeatherData = async (city,setLoading,setForecastData,setError,setWeat
       );
 
       setForecastData(dailyForecast);
-      console.log("forecastdata:", forecastdata);
-      console.log("dailyForecast:", dailyForecast);
+      
     } catch (error) {
       setError("Failed to fetch weather data. Please try again.");
       console.error("Error fetching weather data:", error);

@@ -1,16 +1,26 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import getCity from "./api/currentcity.js";
+import getUserCity from "./api/currentcity.js";
 import fetchWeatherData from "./api/weatherdata.js";
 
 function App() {
-  
+
   const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState("London");
   const [forecastData, setForecastData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+
+  useEffect(() => {
+    getUserCity(setCity);
+  }, []);
+
+
+  useEffect(() => {
+    fetchWeatherData(city, setLoading, setForecastData, setError, setWeatherData);
+  }, [city]);
 
   
   function handleSearch(e) {
@@ -18,16 +28,10 @@ function App() {
     setCity(searchInput);
   }
 
-  useEffect(() => {
-    getCity(setCity);
-  }, []);
-
-  useEffect(() => {
-    fetchWeatherData(city, setLoading, setForecastData, setError, setWeatherData);
-  }, [city]);
+  
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">Loading weather data... Please wait!</div>;
   }
   if (error) {
     return <div className="error">{error}</div>;

@@ -20,3 +20,11 @@ A simple weather application built with React that displays the current weather 
 - **OpenWeatherMap API**: Provides weather data.
 - **CSS**: For styling the application.
 - **Vite**: Build tool for fast development.
+
+## Develop
+
+```shell
+npm i 
+
+npm dev
+```

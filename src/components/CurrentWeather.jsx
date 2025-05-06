@@ -1,10 +1,36 @@
-// Review Comment - Create this component to display current weather information
-// Extract the current weather section from App.jsx to improve component organization
+import React from 'react';
 
-// filepath: /Users/ismailmohammed/gProjects/react-weather/src/components/ForecastList.jsx
-// Review Comment - Create this component to display the 5-day forecast
-// Extract the forecast section from App.jsx to make the codebase more modular
+const CurrentWeather = ({ weatherData }) => {
+  if (!weatherData || !weatherData.main || !weatherData.weather) {
+    return null; // Or return a loading state or error message
+  }
 
-// filepath: /Users/ismailmohammed/gProjects/react-weather/src/hooks/useWeather.js
-// Review Comment - Create a custom hook to handle weather data fetching and state management
-// This would simplify the App component and make weather functionality reusable
+  return (
+    <>
+      <div className="header">
+        <h1 className="city">{weatherData.name}</h1>
+        <p className="temp">{Math.round(weatherData.main.temp)}°C</p>
+        <p className="cond">{weatherData.weather[0].main}</p>
+      </div>
+      <div>
+        <div className="weather-details">
+          <div>
+            <p>Humidity</p>
+            <p className="bold-text">
+              {Math.round(weatherData.main.humidity)}%
+            </p>
+          </div>
+          <div>
+            <p>Wind Speed</p>
+            <p className="bold-text">
+              {Math.round(weatherData.wind.speed)} mph
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default CurrentWeather;
+

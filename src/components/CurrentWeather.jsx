@@ -2,7 +2,7 @@ import React from 'react';
 
 const CurrentWeather = ({ weatherData }) => {
   if (!weatherData || !weatherData.main || !weatherData.weather) {
-    return null; // Or return a loading state or error message
+    return null; 
   }
 
   return (

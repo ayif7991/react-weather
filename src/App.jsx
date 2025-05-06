@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import getCity from "./api/get-current-city.js";
+import getUserCity from "./api/get-current-city.js";
 import fetchWeatherData from "./api/fetch-weather-data.js";
 import SearchForm from "./components/SearchForm.jsx";
 import CurrentWeather from "./components/CurrentWeather.jsx";
@@ -15,7 +15,7 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getCity(setCity);
+    getUserCity(setCity);
   }, []);
 
   useEffect(() => {

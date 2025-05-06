@@ -1,34 +1,35 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import getUserCity from "./api/currentcity.js";
-import fetchWeatherData from "./api/weatherdata.js";
+import getUserCity from "./api/get-current-city.js";
+import fetchWeatherData from "./api/fetch-weather-data.js";
+import SearchForm from "./components/SearchForm.jsx";
 
 function App() {
-
   const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState("London");
   const [forecastData, setForecastData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
 
   useEffect(() => {
     getUserCity(setCity);
   }, []);
 
-
   useEffect(() => {
-    fetchWeatherData(city, setLoading, setForecastData, setError, setWeatherData);
+    fetchWeatherData(
+      city,
+      setLoading,
+      setForecastData,
+      setError,
+      setWeatherData
+    );
   }, [city]);
 
-  
   function handleSearch(e) {
     e.preventDefault();
     setCity(searchInput);
   }
-
-  
 
   if (loading) {
     return <div className="loading">Loading weather data... Please wait!</div>;
@@ -38,18 +39,12 @@ function App() {
   }
   return (
     <div className="wrapper">
-      <form onSubmit={handleSearch} className="search-form">
-        <input
-          type="text"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Enter city"
-          className="search-input"
+      <SearchForm
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          handleSearch={handleSearch}
         />
-        <button type="submit" className="search-btn">
-          Search
-        </button>
-      </form>
+      
       {weatherData && weatherData.main && weatherData.weather && (
         <>
           <div className="header">

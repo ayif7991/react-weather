@@ -13,6 +13,9 @@ A simple weather application built with React that displays the current weather 
 - Show a 5-day weather forecast with daily temperature and weather icons.
 - Loading and error handling for API requests.
 
+## Live Demo
+
+Check out the live application here: [React Weather App](https://locationweather.vercel.app/)
 
 ## Technologies Used
 

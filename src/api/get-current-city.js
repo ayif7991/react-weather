@@ -1,7 +1,12 @@
 const API_KEY = import.meta.env.VITE_API_KEY;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-const getUserCity = (setCity) => {
+/**
+ * Gets the user's current city using geolocation
+ * @param {Function} setCity - State setter to update the city
+ */
+
+const getCity = (setCityCallback) => {
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const lat = position.coords.latitude;
@@ -10,13 +15,13 @@ const getUserCity = (setCity) => {
       const res = await fetch(geoUrl);
       const data = await res.json();
       const city = data.name;
-      setCity(city);
+      setCityCallback(city);
     },
     (error) => {
       console.error("Error getting location:", error);
-      setCity("London");
+      setCityCallback("London");
     }
   );
 };
 
-export default getUserCity;
+export default getCity;

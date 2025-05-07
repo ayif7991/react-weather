@@ -1,32 +1,33 @@
 const API_KEY = import.meta.env.VITE_API_KEY;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+/**
+ * Fetches the current weather data and 5-day forecast for a given city from the OpenWeatherMapAPI.
+ * @param {string} city - The name of the city to fetch weather data for.
+ */
 
-const fetchWeatherData = async (city,setLoading,setForecastData,setError,setWeatherData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const url = `${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric`;
-      const response = await fetch(url);
-      const data = await response.json();
-      setWeatherData(data);
+const fetchWeatherData = async (city) => {
+  const url = `${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric`;
+  const response = await fetch(url);
 
-      const forecastresponse = await fetch(
-        `${BASE_URL}/forecast?q=${city}&appid=${API_KEY}&units=metric`
-      );
-      const forecastdata = await forecastresponse.json();
-      const dailyForecast = forecastdata.list.filter(
-        (_, index) => index % 8 === 0
-      );
+  if (!response.ok) throw new Error(`City not found: ${response.statusText}`);
 
-      setForecastData(dailyForecast);
-      
-    } catch (error) {
-      setError("Failed to fetch weather data. Please try again.");
-      console.error("Error fetching weather data:", error);
-    } finally {
-      setLoading(false);
-    }
+  const weatherData = await response.json();
+
+  const forecastResponse = await fetch(
+    `${BASE_URL}/forecast?q=${city}&appid=${API_KEY}&units=metric`
+  );
+
+  if (!forecastResponse.ok)
+    throw new Error(`Forecast data not found: ${forecastResponse.statusText}`);
+
+  const forecastData = await forecastResponse.json();
+  const dailyForecast = forecastData.list.filter((_, index) => index % 8 === 0);
+
+  return {
+    weatherData,
+    forecastData: dailyForecast,
   };
+};
 
-  export default fetchWeatherData;
+export default fetchWeatherData;

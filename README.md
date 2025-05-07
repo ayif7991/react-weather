@@ -20,7 +20,7 @@ Check out the live application here: [React Weather App](https://locationweather
 
 ## Screenshots
 
-<p align="center"> <img src="/screenshots/image.png alt="Home page" width="600"/> </p>
+<p align="center"> <img src="screenshots\image.png" alt="Home page" width="600"/> </p>
 
 ## Technologies Used
 
